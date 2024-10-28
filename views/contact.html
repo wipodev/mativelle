@@ -1,0 +1,56 @@
+<script>
+  document.querySelector("main > form > input[type=submit]").addEventListener("click", (event) => {
+    event.preventDefault();
+    const name = document.querySelector("main > form input[name=name]").value;
+    const email = document.querySelector("main > form input[name=email]").value;
+    const message = document.querySelector("main > form textarea[name=message]").value;
+    console.log({ name, email, message });
+  });
+</script>
+
+<h1>Contacto</h1>
+
+<form>
+  <label for="name">
+    Nombre:
+    <input type="text" id="name" name="name" required />
+  </label>
+
+  <label for="email">
+    Email:
+    <input type="email" id="email" name="email" required />
+  </label>
+
+  <label for="message">
+    Mensaje:
+    <textarea id="message" name="message" required></textarea>
+  </label>
+
+  <input type="submit" value="Enviar mensaje" />
+</form>
+
+<style>
+  h1 {
+    margin-top: var(--pico-spacing);
+  }
+
+  main>form {
+    max-width: 500px;
+    margin: 0 auto;
+
+    label {
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+    }
+
+    textarea {
+      height: 150px;
+    }
+  }
+</style>

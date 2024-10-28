@@ -1,0 +1,135 @@
+<script>
+  import { getProductById } from "/data/productRepository.js";
+  import { getUrlParams } from "/utils/utils.js";
+
+  async function loadProduct() {
+    const urlParams = getUrlParams();
+    if (urlParams.id) {
+      const product = await getProductById(urlParams.id);
+      renderProduct(product);
+    }
+  }
+
+  function renderProduct(product) {
+    const sharedLinks = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Mira este producto: ${product.name} - ${product.affiliateLink}`)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(product.affiliateLink)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(`Mira este producto: ${product.name} - ${product.affiliateLink}`)}`,
+    };
+
+    const productImage = document.querySelector("main > article > header");
+    const productContainer = document.querySelector("main > article > section");
+    const imageHTML = `<img src="${product.image}" alt="${product.name}" />`;
+    const productHTML = `
+    <small>${product.categories[product.categories.length - 1]}</small>
+    <h1>${product.name}</h1>
+    <p>${product.description}</p>
+    <div class="share-buttons">
+      <a href="${sharedLinks['twitter']}" target="_blank" rel="noopener noreferrer" aria-label="Compartir en Twitter">
+        <i class="fab fa-square-x-twitter"></i></a>
+      <a href="${sharedLinks['facebook']}" target="_blank" rel="noopener noreferrer" aria-label="Compartir en Facebook">
+        <i class="fab fa-square-facebook"></i></a>
+      <a href="${sharedLinks['whatsapp']}" target="_blank" rel="noopener noreferrer" aria-label="Compartir en WhatsApp">
+        <i class="fab fa-square-whatsapp"></i></a>
+    </div>
+    <a href="${product.affiliateLink}" target="_blank" role="button">Comprar ahora</a>
+    `;
+
+    productImage.innerHTML = imageHTML + productImage.innerHTML;
+    productContainer.innerHTML = productHTML;
+  }
+
+  loadProduct();
+</script>
+
+<article class="card-detail container">
+  <header>
+    <section class="ad-container">
+      <p>publicidad</p>
+    </section>
+  </header>
+  <section></section>
+</article>
+
+<style>
+  main article.card-detail {
+    margin: 0 auto;
+    display: grid;
+    gap: 2rem;
+    justify-items: start;
+    margin-top: 1rem;
+    padding: 1rem;
+
+    header {
+      border-bottom: none;
+      background-color: transparent;
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+    small {
+      font-size: 0.875rem;
+      color: var(--pico-muted-color);
+      margin-bottom: 0.5rem;
+    }
+
+    a {
+      margin-top: 1rem;
+    }
+
+    .ad-container {
+      background-color: #f0f0f0;
+      padding: 1rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .share-buttons a {
+      color: var(--pico-primary);
+      font-size: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      & {
+        grid-template-columns: clamp(13rem, 50%, 22rem) 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      & {
+        max-width: 700px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      header {
+        max-width: 22rem;
+        aspect-ratio: 1/1;
+        margin: 0 auto;
+      }
+
+      .ad-container {
+        display: none;
+      }
+    }
+  }
+
+  @media (max-width: 700px) {
+    main.container {
+      padding-block: 0;
+    }
+
+    main article.card-detail {
+      margin-block: 0;
+    }
+  }
+</style>

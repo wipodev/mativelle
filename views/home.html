@@ -1,0 +1,254 @@
+<script>
+  import { getProductsByFilters } from "/data/productRepository.js";
+  import { renderProducts } from "/components/product_card.js";
+  import { renderCategories } from "/components/category_menu.js";
+  import { renderHistoryCategories } from "/components/history_categories.js";
+  import { renderPagination } from "/components/pagination.js";
+  import { getUrlParams, paginate } from "/utils/utils.js";
+
+  let products = [];
+  let categories = [];
+  let historyCategories = [];
+
+  let paginatedProducts = [];
+
+  async function loadProducts() {
+    const urlParams = getUrlParams();
+    let categories = urlParams.category ? urlParams.category.split(",") : null;
+    const result = await getProductsByFilters(categories);
+    products = result.products;
+    categories = result.categories;
+    historyCategories = result.historyCategories;
+    let currentPage = urlParams.page ? parseInt(urlParams.page) : 1;
+    onPageChange(currentPage);
+    renderCategories(categories);
+    renderHistoryCategories(historyCategories);
+  }
+
+  function onPageChange(currentPage = 1) {
+    const paginated = paginate(products, currentPage);
+    paginatedProducts = paginated.items;
+    let totalPages = paginated.totalPages;
+    renderProducts(paginatedProducts);
+    renderPagination(currentPage, totalPages);
+  }
+
+  loadProducts();
+</script>
+
+<section class="grid main">
+  <aside>
+    <h2>Categorías</h2>
+    <ul class="categories-list"></ul>
+  </aside>
+  <section role="group" class="filters-mobile">
+    <details class="dropdown">
+      <summary role="button" class="outline stores">Tiendas</summary>
+      <ul>
+        <li><a href="">Amazon</a></li>
+        <li><a href="">Hotmart</a></li>
+      </ul>
+    </details>
+    <details class="dropdown">
+      <summary role="button" class="outline">Categorías</summary>
+      <ul class="categories-list"></ul>
+    </details>
+  </section>
+  <section class="products-container">
+    <nav aria-label="breadcrumb">
+      <ul></ul>
+    </nav>
+    <section class="grid products">
+    </section>
+    <nav aria-label="pagination" data-pagination>
+      <ul></ul>
+    </nav>
+  </section>
+</section>
+
+<style>
+  main aside {
+    margin-top: var(--pico-spacing);
+
+    .categories-list {
+      list-style: none;
+      padding: 0;
+
+      a {
+        text-decoration: none;
+        text-underline-offset: 4px;
+
+        &:is(:hover, :focus) {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  main .filters-mobile {
+    display: none;
+    box-shadow: none;
+  }
+
+  main .grid {
+    justify-content: center;
+  }
+
+  main .main {
+    grid-template-columns: 250px 1fr;
+  }
+
+  main .products-container [aria-label="breadcrumb"] {
+    padding-inline: var(--pico-spacing);
+
+    a {
+      text-underline-offset: 4px;
+    }
+  }
+
+  main .products {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 200px));
+    justify-items: center;
+  }
+
+  .products>article {
+    max-width: 200px;
+    width: 100%;
+    margin: 0 auto;
+
+    header {
+      --pico-card-sectioning-background-color: #fff;
+      display: flex;
+      justify-content: center;
+      aspect-ratio: 1/1;
+    }
+
+    .card-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 0.7rem;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin: 0;
+
+      a {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  [data-pagination] {
+    justify-content: center;
+
+    li {
+      padding: 0;
+      margin-inline: 0.125rem;
+    }
+
+    a {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+      width: 2rem;
+      height: 2rem;
+      transition: background-color .25s ease;
+
+      &:hover,
+      &:link,
+      &:visited {
+        text-decoration: none;
+      }
+
+      &.active {
+        background-color: #fff;
+        border: calc(var(--pico-border-width) * 2) solid var(--pico-primary-border);
+        border-radius: var(--pico-border-radius);
+        cursor: auto;
+        font-weight: 600;
+      }
+
+      &:hover {
+        background-color: var(--pico-text-selection-color);
+        border-radius: var(--pico-border-radius);
+      }
+    }
+
+    .page-back a,
+    .page-next a {
+      width: 100%;
+      padding: 6px 8px;
+
+      &[aria-disabled="true"] {
+        color: var(--pico-muted-color);
+      }
+
+      &[aria-disabled="true"]:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    main .main {
+      gap: 0;
+    }
+
+    main .products {
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 11.8rem));
+      gap: 0;
+      margin-top: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    aside {
+      display: none;
+    }
+
+    main .main {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    main .filters-mobile {
+      display: flex;
+      padding: 10px;
+      border-bottom: 1px solid var(--pico-form-element-border-color);
+      border-radius: 0;
+      margin-bottom: 0;
+
+      .outline {
+        flex: 1;
+        border: none;
+        padding: 0 10px;
+      }
+
+      .stores {
+        border-right: 1px solid var(--pico-form-element-border-color);
+      }
+    }
+  }
+
+  @media (min-width: 768px) {
+    main.container {
+      padding-block: 0;
+    }
+
+    main .products-container [aria-label="breadcrumb"] {
+      padding-inline: 0;
+    }
+  }
+</style>

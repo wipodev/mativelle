@@ -162,9 +162,13 @@ main {
   flex: 1;
 }
 
-footer {
-  padding: 1rem 0;
+body > footer {
+  padding: 0 0 1rem;
   text-align: center;
+
+  hr {
+    margin-block: 0 0.5rem;
+  }
 }
 
 @media (max-width: 768px) {

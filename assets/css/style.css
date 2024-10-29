@@ -43,7 +43,7 @@ body > header {
   --pico-block-spacing-vertical: 0;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 9999;
   height: var(--wipo-body-header-height);
   background-color: var(--pico-background-color);
   border-bottom: 1px solid var(--pico-form-element-border-color);
